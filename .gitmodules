@@ -1,3 +1,7 @@
 [submodule "yampi"]
 	path = yampi
 	url = https://github.com/naoki-yoshioka/yampi.git
+[submodule "bra/fmt"]
+	path = bra/fmt
+	url = https://github.com/fmtlib/fmt.git
+	branch = v4.0.0

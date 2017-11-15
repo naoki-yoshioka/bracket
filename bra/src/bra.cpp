@@ -5,10 +5,11 @@
 #include <utility>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/format.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
 #include <boost/move/unique_ptr.hpp>
+
+#include <fmt/ostream.h>
 
 #include <yampi/environment.hpp>
 #include <yampi/communicator.hpp>
@@ -21,7 +22,6 @@
 #include <bra/gates.hpp>
 #include <bra/state.hpp>
 #include <bra/make_general_mpi_state.hpp>
-
 
 #include <ket/mpi/state.hpp>
 #include <ket/mpi/qubit_permutation.hpp>
@@ -102,23 +102,22 @@ int main(int argc, char* argv[])
       << (state_ptr->operations_finish_time() - start_time).count()
       << std::endl;
 
-    std::cout
-      << boost::format("Expectation values of spins:\n%|=8s| %|=8s| %|=8s|\n")
-         % "<Qx>" % "<Qy>" % "<Qz>";
+    fmt::print(
+      std::cout, "Expectation values of spins:\n{:^8} {:^8} {:^8}\n", "<Qx>", "<Qy>", "<Qz>");
 # ifndef BOOST_NO_CXX11_RANGE_BASED_FOR
     typedef bra::state::spin_type spin_type;
     for (spin_type const& spin: *(state_ptr->maybe_expectation_values()))
-      std::cout
-        << boost::format("%|=8.3f| %|=8.3f| %|=8.3f|\n")
-           % (0.5-spin[0u]) % (0.5-spin[1u]) % (0.5-spin[2u]);
+      fmt::print(
+        std::cout, "{:^+8.3f} {:^+8.3f} {:^+8.3f}\n",
+        (0.5-spin[0u]), (0.5-spin[1u]), (0.5-spin[2u]));
 # else // BOOST_NO_CXX11_RANGE_BASED_FOR
     typedef bra::state::spins_type::const_iterator const_iterator;
     const_iterator const last = state_ptr->maybe_expectation_values()->end();
     for (const_iterator iter = state_ptr->maybe_expectation_values()->begin();
          iter != last; ++iter)
-      std::cout
-        << boost::format("%|=8.3f| %|=8.3f| %|=8.3f|\n")
-           % (0.5-(*iter)[0u]) % (0.5-(*iter)[1u]) % (0.5-(*iter)[2u]);
+      fmt::print(
+        std::cout, "{:^+8.3f} {:^+8.3f} {:^+8.3f}\n",
+        (0.5-(*iter)[0u]), (0.5-(*iter)[1u]), (0.5-(*iter)[2u]));
 # endif // BOOST_NO_CXX11_RANGE_BASED_FOR
     std::cout << std::flush;
 
